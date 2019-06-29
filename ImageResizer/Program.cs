@@ -21,9 +21,34 @@ namespace ImageResizer
             Stopwatch sw = new Stopwatch();
             sw.Start();
             imageProcess.ResizeImages(sourcePath, destinationPath, 2.0);
+            
             sw.Stop();
 
-            Console.WriteLine($"花費時間: {sw.ElapsedMilliseconds} ms");
+            Console.WriteLine($"原方法花費時間: {sw.ElapsedMilliseconds} ms");
+
+
+           
+
+
+
+            imageProcess.Clean(destinationPath);
+            sw = new Stopwatch();
+            sw.Start();
+
+            var allFiles = imageProcess.FindImages(sourcePath);
+            Task[] tasks = new Task[allFiles.Count];
+
+            for (int i = 0; i < allFiles.Count; i++)
+            {
+                tasks[i] = imageProcess.ResizeImagesV2(allFiles[i], sourcePath, destinationPath, 2.0);
+            }
+
+            Task.WaitAll(tasks);
+            sw.Stop();
+
+            Console.WriteLine($"新方法花費時間: {sw.ElapsedMilliseconds} ms");
+
+            Console.ReadKey();
         }
     }
 }

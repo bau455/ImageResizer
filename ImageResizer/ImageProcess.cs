@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace ImageResizer
 {
@@ -94,5 +95,40 @@ namespace ImageResizer
                 GraphicsUnit.Pixel);
             return resizedbitmap;
         }
+
+        
+        
+
+        /// <summary>
+        /// 進行圖片的縮放作業
+        /// </summary>
+        /// <param name="sourcePath">圖片來源目錄路徑</param>
+        /// <param name="destPath">產生圖片目的目錄路徑</param>
+        /// <param name="scale">縮放比例</param>
+        public async Task ResizeImagesV2(string parFilePath, string sourcePath, string destPath, double scale)
+        {
+
+            Image imgPhoto = Image.FromFile(parFilePath);
+            string imgName = Path.GetFileNameWithoutExtension(parFilePath);
+
+            int sourceWidth = imgPhoto.Width;
+            int sourceHeight = imgPhoto.Height;
+
+            int destionatonWidth = (int)(sourceWidth * scale);
+            int destionatonHeight = (int)(sourceHeight * scale);
+
+            Bitmap processedImage = await Task.Run(() => processBitmap((Bitmap)imgPhoto,
+                sourceWidth, sourceHeight,
+                destionatonWidth, destionatonHeight));
+
+            string destFile = Path.Combine(destPath, imgName + ".jpg");
+            processedImage.Save(destFile, ImageFormat.Jpeg);
+
+        }
+
+
+
+
+    
     }
 }
